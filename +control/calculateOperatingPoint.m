@@ -1,7 +1,9 @@
-function [T_wOP, q_OP, alpha, omega_s_OP, omega_OP] = calculateOperatingPoint(T_aOP,i)
-%CALCULATEOPERATINGPOINT Summary of this function goes here
-%   Detailed explanation goes here
-    model.Parameters
+function [T_wOP, q_OP, alpha, omega_s_OP, omega_OP] = calculateOperatingPoint(T_aOP,i,param)
+% Calculates the operating point for both the hydraulics, thermodynamics
+% and control parameters. First the water temperature is calculated, and
+% then used in the calculation of the flow at the operating point. Next the
+% flow is used to calculate the control parameter alpha and the two angular
+% velocity offset for the pumps at the linearisation point.
 
     % Thermodynamic operating point
     T_wOP = (-param.thermo.C_a*param.thermo.rho_a * param.ctrl.Q(i) * (param.thermo.T_A - T_aOP) + param.thermo.B(i)*T_aOP)/(param.thermo.B(i));
@@ -23,7 +25,5 @@ function [T_wOP, q_OP, alpha, omega_s_OP, omega_OP] = calculateOperatingPoint(T_
         end
         omega_OP = sqrt(omega_squared);
 
-
-    
 end
 
