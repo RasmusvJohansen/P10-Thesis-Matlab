@@ -1,5 +1,8 @@
 % Defines the parameters of the system into a struct called param
 
+    
+
+
 % Thermodynamics parameters
     % Heat transfer constant between water and air in AHU [J/K]
     param.thermo.B = [24, 14, 12, 20] * 10^3;
@@ -43,3 +46,26 @@
     param.pump.a = [453.69, 2212.96, 4193.79, 1948.61] * 10^3;
     % Pump constant [.]
     param.pump.b = [30.00, 50.00, 70.00, 90.00];
+
+% Model parameters
+    
+    % Bilinear model 
+      param.model.F_cali=0; 
+      param.model.G_cali=0;  
+      param.model.M=0; %contains all the individual matrices M_i in a cell array used in the functions H_xi and H_q
+      param.model.Epsilon=0;
+      % Linearisation 
+    % Linearised state matrix A of decoupled and coupled hydronics
+      param.model.A =0; % This will be set in the code as it depend on the operation point
+
+    % Linearised input matrix B for decoupled hydronics
+      param.model.B_Bar =0; % This will be set in the code as it depend on the operation point
+
+    % Linearised input matrix B for decoupled hydronics
+      param.model.B= 0; % This will be set in the code as it depend on the operation point
+   
+% Dimmensions
+    %Number of AHUs obtained from pump parameter
+    param.n = length(param.pump.a);  
+    
+

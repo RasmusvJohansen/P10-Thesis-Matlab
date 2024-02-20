@@ -1,0 +1,30 @@
+function K = DesignProcedure1(param)
+%DESIGNPROCEDURE1 Summary of this function goes here
+%   Returns a control gain based on design procedure 1 (Repport)
+%k = zeros(1,3,param.n);
+
+yalmip('clear')
+
+Q = cell(1,param.n)
+y = cell(1,param.n)
+
+for i=1:param.n
+    Q{i} = sdpvar(3);
+    y{i} = sdpvar(1,3,'full');
+
+end
+cali_Q = blkdiag(Q{:})
+Y = blkdiag(y{:})
+constaints = [param.model.A*cali_Q+cali_Q*param.model.A.'+param.model.B_Bar*Y+Y.'*param.model.B_Bar.' <=0]
+constaints = [constaints, cali_Q >= 0]
+options = sdpsettings('verbose',1,'solver','mosek')
+
+sol = optimize(constaints,[],options)
+
+k = value(Y)/value(cali_Q);
+for i=1:param.n
+    K(1,)
+end
+
+end
+
