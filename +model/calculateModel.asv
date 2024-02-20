@@ -24,7 +24,7 @@ function param = calculateModel(param)
     disp("Calculate linearisation decoupled")
     
     param.model.A = param.model.F_cali+model.H_q(param.ctrl.q_OP,param);
-    param.model.B_Bar = (param.model.G_cali + model.H_xi(param.ctrl.xi_OP,param)) / param.ctrl.Lambda_Bar;
+    param.model.B_Bar = param.model.G_cali+model.H_xi(param.ctrl.xi_OP,param);
     
     disp("Calculate linearisation coupled")
     % Lånt fra John
@@ -46,19 +46,15 @@ function param = calculateModel(param)
         % i'th diagonal entry
 	    Lambda(:,:,i) = ( param.pipe.r(i) + param.pump.a(i) )/param.pump.b(i)*diag([(i==1) (i==2) (i==3) (i==4)]);
         % Psi is a scalar multiplied onto a 1 matrix
-	    Psi(:,:,i)    = param.pipe.R_c/param.pump.b(i)*ones(n,n);
-        % Gamma is a sum of matrices reducing in size, meaning the first 
-        % has an entry in ever index, while the second has in every except
-        % the first row and column, and so on...
-	    Gamma(:,:,i) =  2*param.pipe.R(1)/param.pump.b(i)*G1*(i>0) + ...                    % if i>0 apply this matrix
-									    2*param.pipe.R(2)/param.pump.b(i)*G2*(i>1) + ...    % if i>1 apply this matrix
-									    2*param.pipe.R(3)/param.pump.b(i)*G3*(i>2) + ...    % if i>2 apply this matrix
-									    2*param.pipe.R(4)/param.pump.b(i)*G4*(i>3);         % if i>3 apply this matrix
+	    Psi(:,:,i)    = param.pipe.R_c/param.pump.b(i)*ones(4,4);
+	    Gamma(:,:,i) =  2*param.pipe.R(1)/param.pump.b(i)*G1*(i>0) + ...
+									    2*param.pipe.R(2)/param.pump.b(i)*G2*(i>1) + ...
+									    2*param.pipe.R(3)/param.pump.b(i)*G3*(i>2) + ...
+									    2*param.pipe.R(4)/param.pump.b(i)*G4*(i>3);
 	    
 	    S(:,:,i) = Lambda(:,:,i) + Psi(:,:,i) + Gamma(:,:,i);
     end
     
-    % Compute the partial derivative of f
     for ii=1:4
       % Compute rho
       rho(ii) = 1/(2*sqrt(param.ctrl.q_OP(:)'*S(:,:,ii)*param.ctrl.q_OP(:)));
