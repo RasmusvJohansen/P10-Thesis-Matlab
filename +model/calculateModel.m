@@ -9,7 +9,7 @@ function param = calculateModel(param)
     E =[]; % defines E to be empty
     for i = 1:param.n
         F{i} = [-(param.thermo.B(i))/(param.thermo.C_w*param.thermo.rho_w*param.thermo.V_w(i)), (param.thermo.B(i))/(param.thermo.C_w*param.thermo.rho_w*param.thermo.V_w(i)), 0; 
-                 (param.thermo.B(i))/(param.thermo.C_a*param.thermo.rho_a*param.thermo.V_a(i)), -((param.ctrl.Q(i))/(param.thermo.V_a(i) + (param.thermo.B(i))/(param.thermo.C_a*param.thermo.rho_a*param.thermo.V_a(i)))), 0; 
+                 (param.thermo.B(i))/(param.thermo.C_a*param.thermo.rho_a*param.thermo.V_a(i)), -((param.ctrl.Q(i))/(param.thermo.V_a(i)) + (param.thermo.B(i))/(param.thermo.C_a*param.thermo.rho_a*param.thermo.V_a(i))), 0; 
                  0, 1, 0,];
         G{i} = [param.thermo.T_c/param.thermo.V_w(i); 0; 0];
         M{i} = [-1/param.thermo.V_w(i), 0, 0; 0, 0, 0; 0, 0,0];
@@ -23,7 +23,7 @@ function param = calculateModel(param)
     %H(xi) is found as a function under +model as the function "H_xi.m"
     disp("Calculate linearisation decoupled")
     
-    param.model.A = param.model.F_cali+model.H_q(param.ctrl.q_OP,param);
+    param.model.A = param.model.F_cali + model.H_q(param.ctrl.q_OP,param);
     param.model.B_Bar = (param.model.G_cali + model.H_xi(param.ctrl.xi_OP,param)) / param.ctrl.Lambda_Bar;
     
     disp("Calculate linearisation coupled")
