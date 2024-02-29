@@ -21,7 +21,7 @@ Lyap = param.model.A*Cali_Q +Cali_Q*param.model.A.' + param.model.B_Bar*Cali_Y +
 constraints = [Lyap <= 0]
 
 %Robust stability 
-LPV = [param.model.A*Cali_Q + Cali_Q*param.model.A.' + Cali_phi*param.model.B*param.model.B.' Cali_Y.';
+LPV = [param.model.A*Cali_Q + Cali_Q*param.model.A.' + Cali_phi*param.model.B_Bar*param.model.B_Bar.' Cali_Y.';
         Cali_Y -Cali_phi*eye(param.n)];
 
 constraints = [constraints, LPV <= 0]
@@ -29,11 +29,11 @@ constraints = [constraints, LPV <= 0]
 constraints = [constraints, Cali_phi >= 0, Cali_Q >= 0];
 
 options = sdpsettings('verbose',0,'solver','mosek');
-sol = optimize(constraints,[],options)
+sol = optimize(constraints,[Cali_phi],options)
     if info
         check(constraints);
     end
-    
+    value(Cali_phi)
     K = value(Cali_Y)/value(Cali_Q)
     tau = 1/value(Cali_phi)
     Ks = zeros(1,3,param.n);

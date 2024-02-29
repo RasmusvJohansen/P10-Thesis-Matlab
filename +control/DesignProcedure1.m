@@ -1,4 +1,4 @@
-function Ks = DesignProcedure1(param, info)
+function [Ks,res] = DesignProcedure1(param, info)
 %DESIGNPROCEDURE1 Summary of this function goes here
 %   Returns a control gain based on design procedure 1 (Repport)
 %k = zeros(1,3,param.n);
@@ -99,25 +99,35 @@ function Ks = DesignProcedure1(param, info)
     eig(param.model.B*K)
    
     %Lyapuanov på specefict gain
-    clear constraints
-    eps1 = 1; 
-    eps2 = 0; 
-    eps3 = 0;
-    eps4 = 0;
-    epsilon =[eps1 0 0 0; 0 eps2 0 0; 0 0 eps3 0; 0 0 0 eps4]
+    m = 1;
+    res = zeros(1,m)
+    eps = linspace(0,1,m);
+    for i = 1:m
+        clear constraints
+        
+        eps1 = eps(i); 
+        eps2 = eps(i); 
+        eps3 = eps(i);
+        eps4 = eps(i);
+        epsilon =[eps1 0 0 0; 0 eps2 0 0; 0 0 eps3 0; 0 0 0 eps4];
+    
+        constraints = [param.model.A.'*cali_P + K.'*epsilon.'*param.model.B_Bar.'*cali_P + cali_P*param.model.A + cali_P*param.model.B_Bar*epsilon*K <=0];
+        constraints = [constraints, cali_P >= 0];
+    
+        %constraints = []
+        options = sdpsettings('verbose',0,'solver','mosek');
+        sol = optimize(constraints,[],options);
+        if info
+            check(constraints);
+        end
+        if(min(eig(value(cali_P))) < 0)
+            eig(value(cali_P));
+            res(i) = eps(i);
+        end
+            %eig(param.model.A.'*value(cali_P) + K.'*epsilon.'*param.model.B_Bar.'*value(cali_P) + value(cali_P)*param.model.A + value(cali_P)*param.model.B_Bar*epsilon*K)
+        
+       
 
-    constraints = [param.model.A.'*cali_P + K.'*epsilon.'*param.model.B.'*cali_P + cali_P*param.model.A + cali_P*param.model.B*epsilon*K <=0];
-    constraints = [constraints, cali_P >= 0];
-
-    %constraints = []
-    options = sdpsettings('verbose',0,'solver','mosek');
-    sol = optimize(constraints,[],options);
-    if info
-        check(constraints);
     end
-    eig(value(cali_P))
-    eig(param.model.A.'*value(cali_P) + K.'*epsilon.'*param.model.B.'*value(cali_P) + value(cali_P)*param.model.A + value(cali_P)*param.model.B*epsilon*K)
-
-  
 end
 
