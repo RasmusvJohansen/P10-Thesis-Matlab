@@ -66,7 +66,7 @@ function param = calculateModel(param)
       Df_q(:,ii) = rho(ii)*S(:,:,ii)*param.ctrl.q_OP(:);
     end
     Dg = inv(Df_q);
-    
+    param.model.Dg = Dg;
     param.model.B = (model.H_xi(param.ctrl.xi_OP,param)+param.model.G_cali)*Dg;
     
   

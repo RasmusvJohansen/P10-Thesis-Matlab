@@ -37,7 +37,7 @@ function param = calculateOperatingPoint(param)
         param.ctrl.q_OP(i) = q_OP;
         param.ctrl.xi_OP(3*(i-1)+1:3*i,1) = [T_wOP; param.ctrl.T_aOP(i); 0];
     end
-    param.ctrl.Lambda_Bar = diag(alpha);
+    param.ctrl.Lambda_Bar = diag(param.ctrl.alpha);
 
 end
 
