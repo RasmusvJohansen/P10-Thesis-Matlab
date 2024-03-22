@@ -27,7 +27,8 @@ function [dx,q] = coupledDynamics(t,x,param,step_time)
         % loops variables
         xlin = [T_w(i) - param.ctrl.T_wOP(i); T_a(i) - param.ctrl.T_aOP(i); x(8+i)];
         % Apply the control law for the coupleSystem (25)+(36,5)
-        omega(i) = param.ctrl.alpha(i) * param.ctrl.Ks(:,:,i) * xlin + param.ctrl.omega_OP(i);
+        % omega(i) = param.ctrl.alpha(i) * param.ctrl.Ks(:,:,i) * xlin + param.ctrl.omega_OP(i);
+        omega(i) = param.ctrl.Ks(:,:,i) * xlin + param.ctrl.omega_OP(i);
     end
     % Hydraulic network 
     % The flow could be calculated from the inverse funktion g(omega), 

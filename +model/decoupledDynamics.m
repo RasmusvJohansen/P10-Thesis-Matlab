@@ -19,7 +19,8 @@ function [dx,q] = decoupledDynamics(t,x,i,param,step_time)
     x = [T_w - param.ctrl.T_wOP(i); T_a - param.ctrl.T_aOP(i); x(3)];
     % (14) with the linearisation offset replaced by omega_s_OP calculated
     % for the OP
-    omega = param.ctrl.alpha(i) * param.ctrl.Ks(:,:,i) * x + param.ctrl.omega_s_OP(i);
+    % omega = param.ctrl.alpha(i) * param.ctrl.Ks(:,:,i) * x + param.ctrl.omega_s_OP(i);
+    omega = param.ctrl.Ks(:,:,i) * x + param.ctrl.omega_s_OP(i);
 
     % Hydraulic network (13)
     q = omega/param.ctrl.alpha(i);
