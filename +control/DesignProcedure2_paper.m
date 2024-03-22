@@ -1,4 +1,4 @@
-function Ks = DesignProcedure2(param,info)
+function Ks = DesignProcedure2_paper(param,info)
 %DESIGNPROCEDURE2 Summary of this function goes here
 % Detailed explanation goes here
 
@@ -21,7 +21,7 @@ Lyap = param.model.A*Cali_Q +Cali_Q*param.model.A.' + param.model.B_Bar*Cali_Y +
 constraints = [Lyap <= 0]
 
 %Robust stability 
-LPV = [param.model.A*Cali_Q + Cali_Q*param.model.A.' + Cali_phi*param.model.B_Bar*param.model.B_Bar.' Cali_Y.';
+LPV = [param.model.A*Cali_Q + Cali_Q*param.model.A.' + Cali_phi*param.model.B*param.model.B.' Cali_Y.';
         Cali_Y -Cali_phi*eye(param.n)];
 
 constraints = [constraints, LPV <= 0]

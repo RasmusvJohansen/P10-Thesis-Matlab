@@ -1,4 +1,4 @@
-function param = DesignProcedure1(param, info)
+function [Ks,res] = DesignProcedure1_paper(param, info)
 %DESIGNPROCEDURE1 Summary of this function goes here
 %   Returns a control gain based on design procedure 1 (Repport)
 %k = zeros(1,3,param.n);
@@ -99,7 +99,7 @@ function param = DesignProcedure1(param, info)
     eig(param.model.B*K)
    
     %Lyapuanov på specefict gain
-    m = 100;
+    m = 1;
     res = zeros(1,m)
     eps = linspace(0,1,m);
     for i = 1:m
@@ -129,6 +129,5 @@ function param = DesignProcedure1(param, info)
        
 
     end
-    param.ctrl.results = res;
 end
 
