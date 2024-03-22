@@ -41,5 +41,30 @@ sol = optimize(constraints,[Cali_phi],options)
         Ks(:,:,i) = K(i,3*(i-1)+1:3*i);
     end
 
+    % Evaluation of the results from the design procedure
+    fprintf("Evaluation of design procedure 2 \n")
+    if(eig(value(Cali_Q))<=0)
+        fprintf("Cali_Q is not positive definite!!!\n")
+    else
+        fprintf("Cali_Q is positive definite\n")
+    end
+    eig(value(Cali_Q)).'
+
+    fprintf("Tau is found to be:\n")
+    value(tau)
+    
+    if(eig(param.model.A+param.model.B_Bar*K) > 0)
+        fprintf("One or more eigenvalues in the decoupled system is positive!!! \n")
+    else
+        fprintf("Eigenvalues of the decoupled systems are all negative \n")
+    end
+    eig(param.model.A+param.model.B_Bar*K).'
+    
+    if(eig(param.model.A+param.model.B*K) > 0)
+        fprintf("One or more eigenvalues in the coupled system is positive!!! \n")
+    else
+        fprintf("Eigenvalues of the coupled systems are all negative \n")
+    end
+    eig(param.model.A+param.model.B*K).'
 end
 
