@@ -22,7 +22,7 @@ function param = calculateOperatingPoint(param)
             omega_s_OP = sqrt(omega_s_squared);
     
             % Coupled system, meaning every flow is considered
-            omega_squared = (param.pump.a(1)+param.pipe.r(i))/param.pump.b(i) * param.ctrl.q(i)^2 + param.pipe.R_c/param.pump.b(i)*sum(param.ctrl.q)^2;
+            omega_squared = (param.pump.a(i)+param.pipe.r(i))/param.pump.b(i) * param.ctrl.q(i)^2 + param.pipe.R_c/param.pump.b(i)*sum(param.ctrl.q)^2;
             for k=1:i % Loops the pipe sections summing over the flows of the k'th and remaining pumps
                 omega_squared = omega_squared + 2*param.pipe.R(k)/param.pump.b(i)*sum(param.ctrl.q(k:end))^2;
             end

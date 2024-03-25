@@ -9,8 +9,12 @@ function [dx,q] = decoupledDynamics(t,x,i,param,step_time)
     Q = param.ctrl.Q(i);
 
     % Controller
-    if t>step_time % Perform step if time
-        T_ref = param.ctrl.T_ref+1;
+    if nargin > 4
+        if t>step_time % Perform step if time
+            T_ref = param.ctrl.T_ref - 1;
+        else
+            T_ref = param.ctrl.T_ref;
+        end
     else
         T_ref = param.ctrl.T_ref;
     end
@@ -24,6 +28,7 @@ function [dx,q] = decoupledDynamics(t,x,i,param,step_time)
 
     % Hydraulic network (13)
     q = omega/param.ctrl.alpha(i);
+    % q = omega;
     q = max(q,0);
 
     % Thermodynamics(6)
