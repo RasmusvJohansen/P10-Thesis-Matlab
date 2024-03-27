@@ -18,7 +18,7 @@ function [dx,q] = coupledDynamics(t,x,param,step_time)
     for i=1:4
         if nargin > 3
             if t>step_time % Perform step if time
-                T_ref = param.ctrl.T_ref - 1;
+                T_ref = param.ctrl.T_ref + 1;
             else
                 T_ref = param.ctrl.T_ref;
             end
@@ -31,7 +31,6 @@ function [dx,q] = coupledDynamics(t,x,param,step_time)
         % loops variables
         xlin = [T_w(i) - param.ctrl.T_wOP(i); T_a(i) - param.ctrl.T_aOP(i); x(8+i)];
         % Apply the control law for the coupleSystem (25)+(36,5)
-        % omega(i) = param.ctrl.alpha(i) * param.ctrl.Ks(:,:,i) * xlin + param.ctrl.omega_OP(i);
         omega(i) = param.ctrl.Ks(:,:,i) * xlin + param.ctrl.omega_OP(i);
     end
     % Hydraulic network 
@@ -47,8 +46,6 @@ function [dx,q] = coupledDynamics(t,x,param,step_time)
         fprintf('%f, ',dq)
         fprintf('\n')
     end
-    
-    % q = param.ctrl.q_OP;
     % Thermodynamics(6)
     for i=1:4
         dT_w(i) = (param.thermo.C_w * param.thermo.rho_w * q(i) * (T_c - T_w(i)) - param.thermo.B(i) * (T_w(i) - T_a(i)))/(param.thermo.C_w * param.thermo.rho_w * param.thermo.V_w(i));

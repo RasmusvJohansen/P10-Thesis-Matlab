@@ -15,7 +15,7 @@ function param = calculateOperatingPoint(param)
         % Hydraulic operating point
             % Decoupled system, meaning only i'th flow is considered
             alpha = sqrt((param.pump.a(i)+param.pipe.r(i)+param.pipe.R_c + 2*sum(param.pipe.R(1:i)))/param.pump.b(i));
-            omega_s_squared = (param.pump.a(1)+param.pipe.r(i))/param.pump.b(i) * param.ctrl.q(i)^2 + param.pipe.R_c/param.pump.b(i)*param.ctrl.q(i)^2;
+            omega_s_squared = (param.pump.a(i)+param.pipe.r(i))/param.pump.b(i) * param.ctrl.q(i)^2 + param.pipe.R_c/param.pump.b(i)*param.ctrl.q(i)^2;
             for k=1:i  % Loops the pipe sections only considering the i'th pumps flow
                 omega_s_squared = omega_s_squared + 2*param.pipe.R(k)/param.pump.b(i)*param.ctrl.q(i)^2;
             end
