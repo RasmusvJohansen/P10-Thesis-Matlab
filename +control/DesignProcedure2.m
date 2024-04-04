@@ -1,5 +1,5 @@
 function [Ks] = DesignProcedure2(param,info,isGammaOne)
-% Synthesises a controller based on design procedure 1 in the report, and
+% Synthesises a controller based on design procedure 2 in the report, and
 % returns it as an 3D-array with each 2D controller ocyping a slot in the
 % 3rd dimension. isGammaOne is used to determine if gamma=1 or if it is
 % an optimisation variable
@@ -14,7 +14,7 @@ function [Ks] = DesignProcedure2(param,info,isGammaOne)
     end
     Q = blkdiag(q{:});
     Y = blkdiag(y{:});
-
+    
     % Is gamma = 1 or an optimisation variable
     if isGammaOne
         gamma = 1;
@@ -29,9 +29,12 @@ function [Ks] = DesignProcedure2(param,info,isGammaOne)
                     Y, zeros(4,4), -gamma * eye(4)] <= 0];
     constraints = [constraints,  Q >= 0, gamma >= 0];
     options = sdpsettings('verbose',0,'solver','mosek');
-    sol = optimize(constraints, gamma, options);
+    
     if info
-        check(constraints);
+        sol = optimize(constraints, gamma, options)
+        check(constraints)
+    else
+        sol = optimize(constraints, gamma, options);
     end
 
     % Recovers the controller from the variables
