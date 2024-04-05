@@ -11,7 +11,7 @@ function [dx,q] = decoupledDynamics(t,x,i,param,step_time)
     % Controller
     if nargin > 4
         if t>step_time % Perform step if time
-            T_ref = param.ctrl.T_ref - 1;
+            T_ref = param.ctrl.T_ref + 1;
         else
             T_ref = param.ctrl.T_ref;
         end
@@ -23,12 +23,10 @@ function [dx,q] = decoupledDynamics(t,x,i,param,step_time)
     x = [T_w - param.ctrl.T_wOP(i); T_a - param.ctrl.T_aOP(i); x(3)];
     % (14) with the linearisation offset replaced by omega_s_OP calculated
     % for the OP
-    % omega = param.ctrl.alpha(i) * param.ctrl.Ks(:,:,i) * x + param.ctrl.omega_s_OP(i);
     omega = param.ctrl.Ks(:,:,i) * x + param.ctrl.omega_s_OP(i);
 
     % Hydraulic network (13)
     q = omega/param.ctrl.alpha(i);
-    % q = omega;
     q = max(q,0);
 
     % Thermodynamics(6)
