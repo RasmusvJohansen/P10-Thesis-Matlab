@@ -1,4 +1,4 @@
-function [decoupledResults,coupledResults] = SimulateStep(param, saveName)
+function [decoupledResults,coupledResults] = SimulateStep(param, saveName, applyYLim)
     simtime = 10*60;
     stepTime = 200;
     ref_stop = 21;
@@ -35,7 +35,9 @@ function [decoupledResults,coupledResults] = SimulateStep(param, saveName)
         if i==1
             legend('Decoupled','Coupled',"Ref",Location='northeast')
         end
-        ylim([19.8,21])
+        if (applyYLim)
+            ylim([19.8,21])
+        end
         hold off
     end
     xlabel(f,'Time [s]')
