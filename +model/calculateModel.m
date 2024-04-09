@@ -69,7 +69,7 @@ function param = calculateModel(param)
     param.model.Dg = Dg;
     param.model.B = (model.H_xi(param.ctrl.xi_OP,param)+param.model.G_cali)*Dg;
     
-  
+   
     disp("Testing controlability")
     Ta_ref_singularity= ((param.thermo.T_c*param.thermo.B+param.thermo.C_a*param.thermo.rho_a*param.ctrl.Q*param.thermo.T_A)./(param.thermo.B+param.thermo.C_a*param.thermo.rho_a*param.ctrl.Q));
     if(isequal(round((param.ctrl.T_ref*ones(1,param.n)-Ta_ref_singularity),4),zeros(1,param.n)))

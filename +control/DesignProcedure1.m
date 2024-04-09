@@ -1,4 +1,4 @@
-function [Ks] = DesignProcedure1(param,info)
+function [param] = DesignProcedure1(param,info)
 % Synthesises a controller based on design procedure 1 in the report, and
 % returns it as an 3D-array with each 2D controller ocyping a slot in the
 % 3rd dimension.
@@ -84,4 +84,9 @@ function [Ks] = DesignProcedure1(param,info)
     end
     eig(param.model.A+param.model.B*K).'
     
+    %saves the block version of K this is used further in some simulations
+    param.ctrl.K = K;
+    %saves a 3d matrix version of Ks this is used in the simulation of the
+    %nonlinear system.
+    param.ctrl.Ks = Ks;
 end
