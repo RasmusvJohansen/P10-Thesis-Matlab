@@ -1,4 +1,4 @@
-function Ks = DesignProcedure2_paper(param,info)
+function param = DesignProcedure2_paper(param,info)
 %DESIGNPROCEDURE2 Summary of this function goes here
 % Detailed explanation goes here
 
@@ -66,5 +66,11 @@ sol = optimize(constraints,[Cali_phi],options)
         fprintf("Eigenvalues of the coupled systems are all negative \n")
     end
     eig(param.model.A+param.model.B*K).'
+    
+    %saves the block version of K this is used further in some simulations
+    param.ctrl.K = K;
+    %saves a 3d matrix version of Ks this is used in the simulation of the
+    %nonlinear system.
+    param.ctrl.Ks = Ks;
 end
 

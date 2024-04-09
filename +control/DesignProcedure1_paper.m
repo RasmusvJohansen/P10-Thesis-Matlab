@@ -1,4 +1,4 @@
-function [Ks,res] = DesignProcedure1_paper(param, info)
+function param = DesignProcedure1_paper(param, info)
 %DESIGNPROCEDURE1 Summary of this function goes here
 %   Returns a control gain based on design procedure 1 (Repport)
 %k = zeros(1,3,param.n);
@@ -129,5 +129,11 @@ function [Ks,res] = DesignProcedure1_paper(param, info)
        
 
     end
+    %saves the block version of K this is used further in some simulations
+    param.ctrl.K = K;
+    %saves a 3d matrix version of Ks this is used in the simulation of the
+    %nonlinear system.
+    param.ctrl.Ks = Ks;
+
 end
 

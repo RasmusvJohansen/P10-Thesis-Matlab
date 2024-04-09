@@ -63,7 +63,9 @@
 
     % Linearised input matrix B for decoupled hydronics
       param.model.B= 0; % This will be set in the code as it depend on the operation point
-   
+      
+    % Output matrix 
+      param.model.Cy = eye(12); 
 % Dimmensions
     %Number of AHUs obtained from pump parameter
     param.n = length(param.pump.a);  
