@@ -6,18 +6,19 @@ function [param] = DesignProcedureWeight(param,info,isGammaOne)
 
     % Initializes yalmip and optimisation variables.
     yalmip('clear')
-    q = cell(1,param.n + 1);
+    q = cell(1,param.n);
     y = cell(1,param.n);
     for i=1:param.n
         q{i} = sdpvar(3);
         y{i} = sdpvar(1,3,'full');
     end
-    q{end} = sdpvar(4);
-    Q_small = blkdiag(q{1:end-1});
-    Q = blkdiag(Q_small,q{end});
+    Q_small = blkdiag(q{1:end});
+    % Q = blkdiag(Q_small,q{end});
+    q_off = sdpvar(12,4,'full');
+    Q = [Q_small q_off; q_off.' sdpvar(4)]
+    
     Y_small = blkdiag(y{:});
-    Y = blkdiag(Y_small, sdpvar(4));
-
+    Y = [Y_small, sdpvar(4); sdpvar(4,12,'full'), sdpvar(4)];
     % Is gamma = 1 or an optimisation variable
     if isGammaOne
         gamma = 1;
@@ -55,14 +56,12 @@ function [param] = DesignProcedureWeight(param,info,isGammaOne)
     else
         sol = optimize(constraints, gamma, options);
     end
-    
     % Recovers the controller from the variables
     K = value(Y_small)/value(Q_small);
     Ks = zeros(1,3,param.n);
     for i=1:param.n
         Ks(:,:,i) = K(i,3*(i-1)+1:3*i);
     end
-
     % Evaluation of the results from the design procedure
     fprintf("Evaluation of design procedure 2 \n")
     if(eig(value(Q))<=0)
