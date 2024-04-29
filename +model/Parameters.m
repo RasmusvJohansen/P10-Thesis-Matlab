@@ -66,6 +66,20 @@
       
     % Output matrix 
       param.model.Cy = eye(12); 
+
+% Weight Parameters
+    
+    % ww weight (defined as unity gain)
+      param.model.Aww = zeros(4);
+      param.model.Bww = zeros(4);
+      param.model.Cww = zeros(4);
+      param.model.Dww = diag([1,1,1,1]);
+    % wz weight
+      param.model.Awz = zeros(4);
+      param.model.Bwz = zeros(4);
+      param.model.Cwz = zeros(4);
+      param.model.Dwz = diag([1,1,1,1]);
+
 % Dimmensions
     %Number of AHUs obtained from pump parameter
     param.n = length(param.pump.a);  
