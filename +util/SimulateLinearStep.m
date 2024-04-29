@@ -5,14 +5,14 @@ function [decoupledResults,coupledResults] = SimulateLineareStep(param, saveName
     ref_start = 20;
     x0 = [param.ctrl.T_wOP.'; param.ctrl.T_aOP.'; zeros(4,1)];
     % Decoupled model
-    [t,x] = ode45(@(t,x)model.LinearDynamics(t,x,param,1,stepTime),[0 simtime],x0);
+    [t,x] = ode15s(@(t,x)model.LinearDynamics(t,x,param,1,stepTime),[0 simtime],x0);
     decoupledResults.time = t;
     decoupledResults.Tw = x(:,1:4);
     decoupledResults.Ta = x(:,5:8);
     decoupledResults.T = x(:,9:12);
 
     % Coupled model
-    [t,x] = ode45(@(t,x)model.LinearDynamics(t,x,param,0,stepTime),[0 simtime],x0);
+    [t,x] = ode15s(@(t,x)model.LinearDynamics(t,x,param,0,stepTime),[0 simtime],x0);
     coupledResults.time = t;
     coupledResults.Tw = x(:,1:4);
     coupledResults.Ta = x(:,5:8);
