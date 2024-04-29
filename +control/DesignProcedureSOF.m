@@ -114,22 +114,22 @@ function [param] = DesignProcedureSOF(param, info, listOfUncertainties, alpha)
     end
 
     % Evaluation of the results from the design procedure
-    fprintf("Evaluation of design procedure for real uncertainties \n")
-    if(eig(A+param.model.B_Bar*Ksof*param.model.CySOF) > 0)
+    fprintf("Evaluation of design procedure for three-step SOF \n")
+    if(eig(param.model.A+param.model.B_Bar*Ksof*param.model.CySOF) > 0)
         fprintf("One or more eigenvalues in the decoupled system is positive!!! \n")
     else
         fprintf("Eigenvalues of the decoupled systems are all negative \n")
     end
-    eig(A+param.model.B_Bar*Ksof*param.model.CySOF).'
+    eig(param.model.A+param.model.B_Bar*Ksof*param.model.CySOF).'
     
-    if(eig(A+param.model.B*Ksof*param.model.CySOF) > 0)
+    if(eig(param.model.A+param.model.B*Ksof*param.model.CySOF) > 0)
         fprintf("One or more eigenvalues in the coupled system is positive!!! \n")
     else
         fprintf("Eigenvalues of the coupled systems are all negative \n")
     end
-    eig(A+param.model.B*Ksof*param.model.CySOF).'
+    eig(param.model.A+param.model.B*Ksof*param.model.CySOF).'
     %saves the block version of K this is used further in some simulations
-    param.ctrl.K = K;
+    param.ctrl.K = Ksof*param.model.CySOF;
     %saves a 3d matrix version of Ks this is used in the simulation of the
     %nonlinear system.
     param.ctrl.Ks = Ks;
