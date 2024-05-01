@@ -9,7 +9,7 @@ function param = calculateWz(param,filter,feedforward)
      param.model.Awz = zeros(4);
      param.model.Bwz = zeros(4);
      param.model.Cwz = zeros(4);
-     param.model.Dwz = eye(4);
+     param.model.Dwz = 1*eye(4);
     else
     
     WZ = filter;
