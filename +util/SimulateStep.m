@@ -1,5 +1,5 @@
 function [decoupledResults,coupledResults] = SimulateStep(param, saveName, applyYLim)
-    simtime = 10*100;
+    simtime = 10*250;
     stepTime = 200;
     ref_stop = 21;
     ref_start = 20;
