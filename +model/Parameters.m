@@ -65,12 +65,11 @@
       param.model.Bw = -blkdiag([0;0;1],[0;0;1],[0;0;1],[0;0;1]);
 
 % Weight Parameters
-    
-    % ww weight (defined as unity gain)
-      param.model.Aww = zeros(4);
-      param.model.Bww = zeros(4);
-      param.model.Cww = zeros(4);
-      param.model.Dww = diag([1,1,1,1]);
+    % ww weight
+      param.model.Aww = -2*pi*eye(4);
+      param.model.Bww = 2*eye(4);
+      param.model.Cww = pi*eye(4);
+      param.model.Dww = zeros(4);
     % wz weight
       param.model.Awz = zeros(4);
       param.model.Bwz = zeros(4);
@@ -79,5 +78,3 @@
 % Dimmensions
     %Number of AHUs obtained from pump parameter
     param.n = length(param.pump.a);  
-    
-
