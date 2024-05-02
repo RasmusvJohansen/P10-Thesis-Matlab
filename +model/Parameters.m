@@ -59,10 +59,23 @@
       param.model.B= 0; % This will be set in the code as it depend on the operation point
       
     % Output matrix 
-      param.model.Cy = eye(12);
+      param.model.Cy = eye(12); 
       param.model.CySOF = blkdiag([zeros(2,1), eye(2)],[zeros(2,1), eye(2)],[zeros(2,1), eye(2)],[zeros(2,1), eye(2)]);
       param.model.Cz = blkdiag([0 1 0],[0 1 0],[0 1 0],[0 1 0]);
       param.model.Bw = -blkdiag([0;0;1],[0;0;1],[0;0;1],[0;0;1]);
+
+% Weight Parameters
+    
+    % ww weight (defined as unity gain)
+      param.model.Aww = zeros(4);
+      param.model.Bww = zeros(4);
+      param.model.Cww = zeros(4);
+      param.model.Dww = diag([1,1,1,1]);
+    % wz weight
+      param.model.Awz = zeros(4);
+      param.model.Bwz = zeros(4);
+      param.model.Cwz = zeros(4);
+      param.model.Dwz = diag([1,1,1,1]);
 % Dimmensions
     %Number of AHUs obtained from pump parameter
     param.n = length(param.pump.a);  
