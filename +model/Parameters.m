@@ -61,6 +61,8 @@
     % Output matrix 
       param.model.Cy = eye(12);
       param.model.CySOF = blkdiag([zeros(2,1), eye(2)],[zeros(2,1), eye(2)],[zeros(2,1), eye(2)],[zeros(2,1), eye(2)]);
+      param.model.Cz = blkdiag([0 1 0],[0 1 0],[0 1 0],[0 1 0]);
+      param.model.Bw = -blkdiag([0;0;1],[0;0;1],[0;0;1],[0;0;1]);
 % Dimmensions
     %Number of AHUs obtained from pump parameter
     param.n = length(param.pump.a);  

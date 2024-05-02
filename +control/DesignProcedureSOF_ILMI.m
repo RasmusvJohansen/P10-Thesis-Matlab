@@ -1,6 +1,4 @@
-function [param] = DesignProcedureSOF_ILMI(param, info, listOfUncertainties, alpha)
-
-
+function [param] = DesignProcedureSOF_ILMI(param, info, listOfUncertainties)
     % Generates a diagonal matrix for each vertex given the uncertainties.
     % Firstly every combination of uncertainties is generated, then
     % structured into a 3D array of diagonal matrices.
@@ -16,30 +14,26 @@ function [param] = DesignProcedureSOF_ILMI(param, info, listOfUncertainties, alp
         Uncertainties(:,:,i) = diag(combDouble(i,:));
     end
 
-    A = param.model.A;
     B = @(i) param.model.B*(eye(4) + Uncertainties(i) * param.model.Dwd);
-    C = param.model.CySOF;
     Q = eye(12);
     tol = 1e-2;
-    tol_alpha = 0;
+    tol_alpha = 0.005;
     n = param.n;
-    
     % Step 1
-    yalmip('clear')
     p = cell(1,param.n);
     for i=1:param.n
         p{i} = sdpvar(3);
     end
-    P = blkdiag(p{:});
-    
+    P = blkdiag(p{1:end});
+
     constraints = [];
     for k=1:length(Uncertainties)
-        constraints = [constraints, [A.' * P + P * A + Q,P * B(k); B(k).' * P, eye(n)] >= 0];
+        constraints = [constraints, [param.model.A.' * P + P * param.model.A + Q, P * B(k); B(k).' * P, eye(n)] >= 0];
     end
     % 
     % constraints = [A.' * P + P * A + Q,P * B;
     %                 B.' * P, eye(n)] >= 0;
-    constraints = [constraints, P >= 0,alpha >= 0];
+    constraints = [constraints, P >= 0];
     options = sdpsettings('verbose',0,'solver','mosek');
     sol = optimize(constraints, -trace(P), options);
     X(:,:,1) = value(P);
@@ -48,43 +42,28 @@ function [param] = DesignProcedureSOF_ILMI(param, info, listOfUncertainties, alp
     while 1
         % Step 2
         yalmip('clear')
-        p = cell(1,param.n);
-        ksof = cell(1,param.n);
-        for j=1:param.n
-            p{j} = sdpvar(3);
-            ksof{j} = sdpvar(1,2,'full');
-        end
-        P = blkdiag(p{:});
-        Ksof = blkdiag(ksof{:});
-    
+        [P, Ksof] = constructVariables(param);
         alpha = sdpvar(1);
         constraints = [];
         for k=1:length(Uncertainties)
-            constraints = [constraints, [A.'*P + P*A - X(:,:,i)*(B(k)*B(k).')*P - P*(B(k)*B(k).')*X(:,:,i) + X(:,:,i)*(B(k)*B(k).')*X(:,:,i) - alpha*P , (B(k).'*P + Ksof*C).';
-                            (B(k).'*P + Ksof*C), -eye(n)] <= 0];
+            constraints = [constraints, [param.model.A.'*P + P*param.model.A - X(:,:,i)*(B(k)*B(k).')*P - P*(B(k)*B(k).')*X(:,:,i) + X(:,:,i)*(B(k)*B(k).')*X(:,:,i) - alpha*P , (B(k).'*P + Ksof*param.model.CySOF).';
+                            (B(k).'*P + Ksof*param.model.CySOF), -eye(n)] <= 0];
         end
         constraints = [constraints, P >= 0];
         options = sdpsettings('verbose',0,'solver','mosek');
         sol = bisection(constraints, alpha, options);
-        alpha_min = value(alpha);
+        alpha_min = value(alpha)
         % Step 3
         if(alpha_min <= tol_alpha)
             break
         end
         % Step 4
         yalmip('clear')
-        p = cell(1,param.n);
-        f = cell(1,param.n);
-        for j=1:param.n
-            p{j} = sdpvar(3);
-            f{j} = sdpvar(1,2,'full');
-        end
-        P = blkdiag(p{:});
-        Ksof = blkdiag(f{:});
+        [P, Ksof] = constructVariables(param);
         constraints = [];
         for k=1:length(Uncertainties)
-            constraints = [constraints, [A.'*P + P*A - X(:,:,i)*(B(k)*B(k).')*P - P*(B(k)*B(k).')*X(:,:,i) + X(:,:,i)*(B(k)*B(k).')*X(:,:,i) - alpha_min*P , (B(k).'*P + Ksof*C).';
-                            (B(k).'*P + Ksof*C), -eye(n)] <= 0];
+            constraints = [constraints, [param.model.A.'*P + P*param.model.A - X(:,:,i)*(B(k)*B(k).')*P - P*(B(k)*B(k).')*X(:,:,i) + X(:,:,i)*(B(k)*B(k).')*X(:,:,i) - alpha_min*P , (B(k).'*P + Ksof*param.model.CySOF).';
+                            (B(k).'*P + Ksof*param.model.CySOF), -eye(n)] <= 0];
         end
         constraints = [constraints, P >= 0];
         options = sdpsettings('verbose',0,'solver','mosek');
@@ -108,6 +87,8 @@ function [param] = DesignProcedureSOF_ILMI(param, info, listOfUncertainties, alp
     
     % Evaluation of the results from the design procedure
     fprintf("Evaluation of design procedure for ILMI SOF \n")
+    fprintf("Solved the problem in %i iterations\n", i)
+    fprintf("The solution had alpha: %f \n", alpha_min)
     if(eig(param.model.A+param.model.B_Bar*Ksof*param.model.CySOF) > 0)
         fprintf("One or more eigenvalues in the decoupled system is positive!!! \n")
     else
@@ -129,3 +110,13 @@ function [param] = DesignProcedureSOF_ILMI(param, info, listOfUncertainties, alp
 
 end
 
+function [P, Ksof] = constructVariables(param)
+    ksof = cell(1,param.n);
+    p = cell(1,param.n);
+    for i=1:param.n
+        p{i} = sdpvar(3);
+        ksof{i} = sdpvar(1,2,'full');
+    end
+    P = blkdiag(p{1:end});
+    Ksof = blkdiag(ksof{:});
+end
