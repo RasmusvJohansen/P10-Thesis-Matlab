@@ -1,7 +1,6 @@
 function param = calculateWDelta(param,unityGain)
 %CALCULATEFILTER calculates the A,B,C,D matrices of the filter and add them
-%to param struct 
-%   Detailed explanation goes here
+%to param struct
 
 %apply Wdelta
 if(unityGain == 0)    

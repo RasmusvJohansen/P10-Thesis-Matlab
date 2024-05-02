@@ -1,8 +1,5 @@
 % Defines the parameters of the system into a struct called param
 
-    
-
-
 % Thermodynamics parameters
     % Heat transfer constant between water and air in AHU [J/K]
     param.thermo.B = [24, 14, 12, 20] * 10^3;
@@ -32,8 +29,6 @@
     % param.ctrl.Q  = [5.98 3.49 2.99 4.98];
     % QNorm from their matlab but not the paper
     param.ctrl.Q  = [8.9706    5.2329    4.4853    7.4755];
-   
-
 
 % Hydraulic parameters
     % Hydraulic resistance of the chilled water source [pa/(m3 /s)]
@@ -48,7 +43,6 @@
     param.pump.b = [30.00, 50.00, 70.00, 90.00];
 
 % Model parameters
-    
     % Bilinear model 
       param.model.F_cali=0; 
       param.model.G_cali=0;  
@@ -66,6 +60,7 @@
       
     % Output matrix 
       param.model.Cy = eye(12); 
+      param.model.CySOF = blkdiag([zeros(2,1), eye(2)],[zeros(2,1), eye(2)],[zeros(2,1), eye(2)],[zeros(2,1), eye(2)]);
 
 % Weight Parameters
     
