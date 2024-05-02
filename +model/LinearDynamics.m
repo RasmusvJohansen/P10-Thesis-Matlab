@@ -1,11 +1,11 @@
-function [dx,q] = LinearDynamics(t,x,param,decoupled,step_time)
+function [dx,q] = LinearDynamics(t,x,param,decoupled,step_time,ref)
     % States
     T_w = x(1:4);
     T_a = x(5:8);
     delta = x(9:12);
     if nargin > 4
         if t>step_time % Perform step if time
-            T_ref = param.ctrl.T_ref + 1;
+            T_ref = param.ctrl.T_ref + ref;
         else
             T_ref = param.ctrl.T_ref;
         end
@@ -17,7 +17,9 @@ function [dx,q] = LinearDynamics(t,x,param,decoupled,step_time)
     for i=1:4
         xLin((i-1)*3+1:i*3,1) = [T_w(i) - param.ctrl.T_wOP(i); T_a(i) - param.ctrl.T_aOP(i); delta(i)];
     end
-    q = param.ctrl.K*xLin;
+    omega = param.ctrl.K*xLin+param.ctrl.omega_OP;
+    [~, q_sim] = ode15s(@(tt,xx)model.calculateFlow(tt,xx,omega,param),[0 60],zeros(4,1));
+    q = q_sim(end,:).';
 
     if(decoupled == 1)
         dx_temp = (param.model.A + param.model.B_Bar * param.ctrl.K)*xLin - blkdiag([0;0;1],[0;0;1],[0;0;1],[0;0;1])*ones(4,1)*(T_ref - param.ctrl.T_ref);

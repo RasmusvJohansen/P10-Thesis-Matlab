@@ -16,7 +16,7 @@ end
 % end
 Q_hat = sdpvar(28,28); %28x28
 % Y_hat = sdpvar(20,28,'full'); %20x28
-Y_hat = [sdpvar(4,28,'full')]
+Y_hat = [sdpvar(20,12,'full'), zeros(20,16)]
 
 %insert Q into Q_hat
 Q_hat(1:12,1:12) = blkdiag(q{:});
@@ -51,10 +51,10 @@ A_hat = [param.model.A, Bw*param.model.Cww, zeros(12,4),zeros(12,4),zeros(12,4);
 %          zeros(4,20);
 %          param.model.BWu,zeros(4,16)];
 
-B_hat = [param.model.B;
-         zeros(4,4);
-         zeros(4,4);
-         zeros(4,4);
+B_hat = [param.model.B,);
+         zeros(4,20);
+         zeros(4,20);
+         zeros(4,20);
          param.model.BWu];
 
 B_bar = [Bw*param.model.Dww, param.model.B;
@@ -67,14 +67,10 @@ C1 = [param.model.Dwz*Cz, -param.model.Dwz*param.model.DWref*param.model.Cww, pa
       zeros(4,12),zeros(4),zeros(4),zeros(4),param.model.CWu;
       zeros(4,28)];
 
-C2 = [zeros(4,4);
-      param.model.DWu;
-      param.model.Dwd];
-% 
-% 
-% C2 = [zeros(4,20);
-%       param.model.DWu,zeros(4,16);
-%       param.model.Dwd, zeros(4,16)];
+
+C2 = [zeros(4,20);
+      param.model.DWu,zeros(4,16);
+      param.model.Dwd, zeros(4,16)];
 
 D_Bar = [-param.model.Dwz*param.model.DWref*param.model.Dww,zeros(4);
         zeros(4,8);
