@@ -39,12 +39,4 @@ function [Gamma] = CalculatePerformanceLPV(param,listOfUncertainties)
     options = sdpsettings('verbose',0,'solver','mosek');
     sol = optimize(constraints, gamma, options);
     Gamma = value(gamma)
-
-    % Calculate Hinfnorm from the TF
-    A_CL_Nominal = [param.model.A+param.model.B* param.ctrl.K, param.model.Bw*param.model.Cww, zeros(12,4);
-                zeros(4,12), param.model.Aww, zeros(4,4);
-                param.model.Bwz*param.model.Cz, -param.model.Bwz*param.model.Cww, param.model.Awz];
-    s=tf('s');
-    N = C_CL/(s*eye(20)-A_CL_Nominal)*B_CL+D_CL;
-    ActualGamma = hinfnorm(N)
 end
