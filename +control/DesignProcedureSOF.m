@@ -1,6 +1,4 @@
 function [param] = DesignProcedureSOF(param, info, listOfUncertainties, alpha)
-
-
     % Generates a diagonal matrix for each vertex given the uncertainties.
     % Firstly every combination of uncertainties is generated, then
     % structured into a 3D array of diagonal matrices.

@@ -6,8 +6,10 @@ function [decoupledResults,coupledResults] = SimulateLineareStep(param, saveName
     end
     stepTime = 200;
     ref_start = 20;
+    if nargin < 5
+        ref = 1;
+    end
     ref_stop = ref_start+ref;
-    
     x0 = [param.ctrl.T_wOP.'; param.ctrl.T_aOP.'; zeros(4,1)];
     % Decoupled model
     [t,x] = ode15s(@(t,x)model.LinearDynamics(t,x,param,1,stepTime,ref),[0 simtime],x0);
