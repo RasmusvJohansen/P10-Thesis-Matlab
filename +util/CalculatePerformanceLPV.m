@@ -1,4 +1,4 @@
-function [Gamma] = CalculatePerformanceLPV(param,listOfUncertainties)
+function [Gamma, P_out] = CalculatePerformanceLPV(param,listOfUncertainties)
     m = length(listOfUncertainties);
     Uncertainties = zeros(m,m,m^2);
     if(m == 1)% check if the inputs share uncertainties or if they have individual uncertainties
@@ -39,4 +39,7 @@ function [Gamma] = CalculatePerformanceLPV(param,listOfUncertainties)
     options = sdpsettings('verbose',0,'solver','mosek');
     sol = optimize(constraints, gamma, options);
     Gamma = value(gamma)
+    eig(value(P))
+    value(P)
+    P_out = value(P)
 end

@@ -78,7 +78,6 @@ function [param] = DesignProcedureSOF_ILMI(param, info, listOfUncertainties)
             X(:,:,i) = P_min(:,:,i-1);
         end
     end
-    
     Ksof = value(Ksof);
     Ks = zeros(1,3,param.n);
     for j=1:param.n
