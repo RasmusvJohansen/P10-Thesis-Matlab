@@ -1,4 +1,4 @@
-function [Gamma, P_out] = CalculatePerformanceLPV(param,listOfUncertainties)
+function [Gamma] = CalculatePerformanceLPV(param,listOfUncertainties)
     m = length(listOfUncertainties);
     Uncertainties = zeros(m,m,m^2);
     if(m == 1)% check if the inputs share uncertainties or if they have individual uncertainties
