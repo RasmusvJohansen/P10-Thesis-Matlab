@@ -1,5 +1,10 @@
-function [decoupledResults,coupledResults] = SimulateStep(param, saveName, applyYLim)
-    simtime = 10*250;
+function [decoupledResults,coupledResults] = SimulateStep(param, saveName, applyYLim,simulationTime_s)
+    
+    if (nargin < 4)
+    simtime = 10*60;
+    else
+    simtime = simulationTime_s;
+    end
     stepTime = 200;
     ref_stop = 21;
     ref_start = 20;
