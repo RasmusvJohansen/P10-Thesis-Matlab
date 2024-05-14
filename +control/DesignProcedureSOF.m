@@ -13,7 +13,7 @@ function [param] = DesignProcedureSOF(param, info, listOfUncertainties, alpha)
     for i=1:length(combDouble)
         Uncertainties(:,:,i) = diag(combDouble(i,:));
     end
-
+    B = @(i) param.model.B*(eye(4) + Uncertainties(i) * param.model.Dwd);
 
     % Step 1-3
     A = param.model.A + (alpha)*eye(12);
@@ -27,28 +27,26 @@ function [param] = DesignProcedureSOF(param, info, listOfUncertainties, alpha)
     end
     Q = blkdiag(q{:});
     Y = blkdiag(y{:});
-    
+
+
     % Setup constraint
-    constraints = [A * Q + Q * A.' + param.model.B_Bar * Y + Y.' * param.model.B_Bar.' <=0];
+    constraints = [];
     for i=1:length(Uncertainties)
-        constraints = [constraints, A * Q + Q * A.' + param.model.B * (eye(4) + Uncertainties(i) * param.model.Dwd) * Y + Y.' * (eye(4) + Uncertainties(i) * param.model.Dwd)' * param.model.B.' <= 0];
+        constraints = [constraints, A * Q + Q * A.' + B(i) * Y + Y.' * B(i).' <= 0];
     end
-    % constraints = [constraints,  Q - eye(12) >= 0];
-    % options = sdpsettings('verbose',0,'solver','mosek');
-    % sol = optimize(constraints, trace(Q), options)
-    constraints = [constraints,  Q >= 0];
+    constraints = [constraints,  Q - eye(12)>= 0];
+    % constraints = [constraints,  Q >= 0];
+    
     options = sdpsettings('verbose',0,'solver','mosek');
     if info
-        sol = optimize(constraints, [], options)
+        optimize(constraints, [], options)
         check(constraints)
     else
-        sol = optimize(constraints, [], options);
+        optimize(constraints, [], options);
     end
     
     % step 4
     Ksf = value(Y)/value(Q);
-    % Ksf = blkdiag(param.ctrl.Ks(:,:,1),param.ctrl.Ks(:,:,2),param.ctrl.Ks(:,:,3),param.ctrl.Ks(:,:,4));
-    % [decoupledResults,coupledResults] = util.SimulateStep(param,"Output_Feedback",0);
     
     %step 5
     yalmip('clear')
@@ -60,9 +58,9 @@ function [param] = DesignProcedureSOF(param, info, listOfUncertainties, alpha)
     sigma = sdpvar(1);
     constraints = [A.'*P + P*A - sigma*(param.model.CySOF.'*param.model.CySOF) <= 0];
     for i=1:length(Uncertainties)
-        constraints = [constraints, (A + param.model.B*(eye(4) + Uncertainties(i) * param.model.Dwd)*Ksf).'*P + P*(A + param.model.B*(eye(4) + Uncertainties(i) * param.model.Dwd)*Ksf)<=0];
+        constraints = [constraints, (A + B(i)*Ksf).'*P + P*(A + B(i)*Ksf) <= 0];
     end
-    constraints = [constraints, P>=eye(12), sigma >= 0];
+    constraints = [constraints, P - eye(12) >= 0, sigma >= 0];
     options = sdpsettings('verbose',0,'solver','mosek');
     if info
         sol = optimize(constraints, [], options)
@@ -71,7 +69,7 @@ function [param] = DesignProcedureSOF(param, info, listOfUncertainties, alpha)
         sol = optimize(constraints, [], options);
     end
     P_min = value(P);
-    
+
     % Step 6
     yalmip('clear')
     k = cell(1,param.n);
@@ -80,21 +78,13 @@ function [param] = DesignProcedureSOF(param, info, listOfUncertainties, alpha)
     end
     K = blkdiag(k{:});
     gamma = sdpvar(1);
-    
+
     kvec = [K(:,1);K(:,2);K(:,3);K(:,4);K(:,5);K(:,6);K(:,7);K(:,8)];
     constraints = [gamma, kvec.'; kvec, eye(size(kvec,1))]>=0;
-    
+    % constraints = [(A + B(2)*K*param.model.CySOF).'*P_min + P_min*(A + B(2)*K*param.model.CySOF)]<=0;
+    % constraints = [constraints, [(A + param.model.B*K*param.model.CySOF).'*P_min + P_min*(A + param.model.B*K*param.model.CySOF)]<=0];
     for i=1:length(Uncertainties)
-        if (eye(4) + Uncertainties(i) * param.model.Dwd) ~= 0 % In case the uncertainties is 0 and the sdpvar is missing
-            constraints = [constraints, [(A + param.model.B*(eye(4) + Uncertainties(i) * param.model.Dwd)*K*param.model.CySOF).'*P_min + P_min*(A + param.model.B*(eye(4) + Uncertainties(i) * param.model.Dwd)*K*param.model.CySOF)]<=0];
-        else
-            % the sdpvar is missing, calculate the definitness
-            try chol(-(A + param.model.B*(eye(4) + Uncertainties(i) * param.model.Dwd)*K*param.model.CySOF).'*P_min + P_min*(A + param.model.B*(eye(4) + Uncertainties(i) * param.model.Dwd)*K*param.model.CySOF));
-                disp('Matrix is symmetric negative definite.')
-            catch ME
-                disp('Matrix is not symmetric negative definite')
-            end
-        end
+        constraints = [constraints, [(A + B(i)*K*param.model.CySOF).'*P_min + P_min*(A + B(i)*K*param.model.CySOF)]<=0];
     end
     
     options = sdpsettings('verbose',0,'solver','mosek');

@@ -39,4 +39,7 @@ function [Gamma] = CalculatePerformanceLPV(param,listOfUncertainties)
     options = sdpsettings('verbose',0,'solver','mosek');
     sol = optimize(constraints, gamma, options);
     Gamma = value(gamma)
+    eig(value(P))
+    value(P)
+    P_out = value(P)
 end

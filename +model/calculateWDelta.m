@@ -27,10 +27,12 @@ else
     WdeltaSS.D = WdeltaTF2SS.D;
 
 end
+
 param.model.Awd = WdeltaSS.A;
 param.model.Bwd = WdeltaSS.B;
 param.model.Cwd = WdeltaSS.C;
-param.model.Dwd = WdeltaSS.D;
+% param.model.Dwd = WdeltaSS.D;
+param.model.Dwd = pinv(param.model.B)*(param.model.B-param.model.B_Bar);
 
 end
 
