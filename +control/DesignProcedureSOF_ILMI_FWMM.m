@@ -73,14 +73,8 @@ function [param] = DesignProcedureSOF_ILMI_FWMM(param, info, listOfUncertainties
     options = sdpsettings('verbose',0,'solver','mosek');
     optimize(constraints,[gammasf],options);
     gammaSF = value(gammasf);
-    y_out = value(Y_hat);
-    q_out = value(Q_hat);
-    
-    Ksf = y_out(1:4,1:12)/q_out(1:12,1:12);
-    param.ctrl.K = Ksf(1:4,1:12);
-    util.SimulateLinearStep(param,"Examination_Output_Feedback_ILMI_Hinf",0,1000);
     X(:,:,1) = blkdiag(inv(value(Q_hat)),eye(12));
-    % X(:,:,1) = eye(40);
+    
     i = 1;
     tic
     while 1
@@ -99,6 +93,7 @@ function [param] = DesignProcedureSOF_ILMI_FWMM(param, info, listOfUncertainties
         bisection(constraints, alpha, options);
         alpha_min(i) = value(alpha);
         alpha_min(i)
+
         % Step 3
         if(alpha_min(i) <= tol_alpha)
             break
