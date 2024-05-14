@@ -11,7 +11,7 @@ function [decoupledResults,coupledResults] = SimulateStep(param, saveName, apply
     % Decoupled sim
     for i=1:4
         x0 = [param.ctrl.T_wOP(i); param.ctrl.T_aOP(i); 0];
-        [t,x] = ode23s(@(t,x)model.decoupledDynamics(t,x,i,param,stepTime),[0 simtime],x0);
+        [t,x] = ode15s(@(t,x)model.decoupledDynamics(t,x,i,param,stepTime),[0 simtime],x0);
         decoupledResults(i).time = t;
         decoupledResults(i).Tw = x(:,1);
         decoupledResults(i).Ta = x(:,2);
