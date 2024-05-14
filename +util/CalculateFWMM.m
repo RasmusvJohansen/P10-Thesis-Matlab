@@ -53,7 +53,6 @@ function [Gamma] = CalculateFWMM(param,listOfUncertainties)
     p = cell(1,param.n);
     for i=1:param.n
         p{i} = sdpvar(3);
-        ksof{i} = sdpvar(1,2,'full');
     end
     P = sdpvar(28);
     P(1:12,1:12) = blkdiag(p{1:end});

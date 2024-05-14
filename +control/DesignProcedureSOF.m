@@ -68,36 +68,7 @@ function [param] = DesignProcedureSOF(param, info, listOfUncertainties, alpha)
     else
         sol = optimize(constraints, [], options);
     end
-    P_min = value(P)
-    % eig(P_min-eye(12))
-    % [A.'*P_min + P_min*A - value(sigma)*(param.model.CySOF.'*param.model.CySOF)]
-    % eig(A.'*P_min + P_min*A - value(sigma)*(param.model.CySOF.'*param.model.CySOF))
-    % for i=1:length(Uncertainties)
-    %     [(A + B(i)*Ksf).'*P_min + P_min*(A + B(i)*Ksf)]
-    %     eig((A + B(i)*Ksf).'*P_min + P_min*(A + B(i)*Ksf))
-    % end
-
-
-
-
-
-
-    yalmip('clear')
-    sigma = sdpvar(1);
-    constraints = [A.'*P_min + P_min*A - sigma*(param.model.CySOF.'*param.model.CySOF) <= 0];
-    for i=1:length(Uncertainties)
-    %     constraints = [constraints, (A + B(i)*Ksf).'*P_min + P_min*(A + B(i)*Ksf) <= 0];
-        eig(A.'*P_min + P_min*A - P_min*B(i)*B(i).'*P_min)
-        eig((A + B(i)*Ksf).'*P_min + P_min*(A + B(i)*Ksf))
-    end
-    constraints = [constraints, sigma >= 0];
-    options = sdpsettings('verbose',0,'solver','mosek');
-    sol = optimize(constraints, [], options)
-    value(sigma)
-
-
-
-
+    P_min = value(P);
 
     % Step 6
     yalmip('clear')

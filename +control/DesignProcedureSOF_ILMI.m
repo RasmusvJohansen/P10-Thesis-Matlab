@@ -17,7 +17,7 @@ function [param] = DesignProcedureSOF_ILMI(param, info, listOfUncertainties)
     B = @(i) param.model.B*(eye(4) + Uncertainties(i) * param.model.Dwd);
     Q = eye(12);
     tol = 1e-2;
-    tol_alpha = 0.005;
+    tol_alpha = 0.001;
     n = param.n;
     % Step 1
     p = cell(1,param.n);
@@ -52,10 +52,16 @@ function [param] = DesignProcedureSOF_ILMI(param, info, listOfUncertainties)
         constraints = [constraints, P >= 0];
         options = sdpsettings('verbose',0,'solver','mosek');
         sol = bisection(constraints, alpha, options);
-        alpha_min = value(alpha)
+        alpha_min(i) = value(alpha);
+        alpha_min(i)
         % Step 3
-        if(alpha_min <= tol_alpha)
+        if(alpha_min(i) <= tol_alpha)
             break
+        end
+        if (isnan(alpha_min(i)))
+            fprintf("Alpha became NaN after %i itr. Last value was %f \n", i, alpha_min(i-1));
+            i = i-1;
+            alpha_min(i) = alpha_min(i) + 0.001; % 0.01
         end
         % Step 4
         yalmip('clear')
