@@ -70,6 +70,22 @@ function [param] = DesignProcedureSOF(param, info, listOfUncertainties, alpha)
     end
     P_min = value(P);
 
+    % Delete later... Check if SKSD is SSD by solving 5.65
+    yalmip('clear')
+    sigma = sdpvar(1);
+    constraints = [A.'*P_min + P_min*A - sigma*(param.model.CySOF.'*param.model.CySOF) <= 0];
+    for i=1:length(Uncertainties)
+        % constraints = [constraints, (A + B(i)*Ksf).'*P + P*(A + B(i)*Ksf) <= 0];
+         try chol( -(A.'*P_min + P_min*A - P_min * B(i) * B(i).' * P_min) );
+            % disp('Matrix is symmetric negative definite.')
+        catch ME
+            disp('System is not SSD!!!')
+        end
+    end
+    constraints = [constraints, sigma >= 0];
+    optimize(constraints, [], options);
+    value(sigma)
+
     % Step 6
     yalmip('clear')
     k = cell(1,param.n);

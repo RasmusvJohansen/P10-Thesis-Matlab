@@ -99,9 +99,13 @@ function [param] = DesignProcedureSOF_ILMI_FWMM(param, info, listOfUncertainties
             break
         end
         if (isnan(alpha_min(i)))
-            fprintf("Alpha became NaN after %i itr. Last value was %f \n", i, alpha_min(i-1));
-            i = i-1;
-            alpha_min(i) = alpha_min(i) + 0.001; % 0.01
+            if (i > 1)
+                fprintf("Alpha became NaN after %i itr. Last value was %f \n", i, alpha_min(i-1));
+                i = i-1;
+                alpha_min(i) = alpha_min(i) + 0.01; % 0.01
+            else
+                alpha_min(i) = 10; % 0.01
+            end
         end
         % Step 4
         % yalmip('clear')

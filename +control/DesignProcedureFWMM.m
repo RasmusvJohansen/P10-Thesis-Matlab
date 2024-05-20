@@ -81,7 +81,7 @@ function param = DesignProcedureFWMM(param,info)
     param.ctrl.K = k;
 
     % Evaluation of the results from the design procedure
-    fprintf("Evaluation of design procedure for Frequency weighted model matching \n")
+    fprintf("Evaluation of design procedure for FWMM \n")
     fprintf("Gamma is found to be: %f \n", value(gamma))
     if(info)
         disp("Eig of Q_hat")

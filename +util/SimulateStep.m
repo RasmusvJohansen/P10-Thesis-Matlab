@@ -11,7 +11,7 @@ function [decoupledResults,coupledResults] = SimulateStep(param, saveName, apply
     % Decoupled sim
     for i=1:4
         x0 = [param.ctrl.T_wOP(i); param.ctrl.T_aOP(i); 0];
-        [t,x] = ode15s(@(t,x)model.decoupledDynamics(t,x,i,param,stepTime),[0 simtime],x0);
+        [t,x] = ode23s(@(t,x)model.decoupledDynamics(t,x,i,param,stepTime),[0 simtime],x0);
         decoupledResults(i).time = t;
         decoupledResults(i).Tw = x(:,1);
         decoupledResults(i).Ta = x(:,2);
@@ -28,7 +28,8 @@ function [decoupledResults,coupledResults] = SimulateStep(param, saveName, apply
     
     step_x = linspace(0,simtime,simtime);
     step_y = [ones(1,stepTime)*ref_start,ones(1,simtime-stepTime)*ref_stop];
-
+    
+    % [yref,tref] = step(ss(param.model.AWref,param.model.BWref,param.model.CWref,param.model.DWref));
     figure()
     f = tiledlayout('vertical');
     for i=1:4
@@ -37,6 +38,7 @@ function [decoupledResults,coupledResults] = SimulateStep(param, saveName, apply
         plot(decoupledResults(i).time,decoupledResults(i).Ta-273.15,'blue')
         plot(coupledResults.time,coupledResults.Ta(:,i)-273.15,['red','--'])
         plot(step_x,step_y,"k--")
+        % plot(tref+200,yref(:,i,i)+20,Color=[160/255,32/255,240/255])
         if i==1
             legend('Decoupled','Coupled',"Ref",Location='northeast')
         end
